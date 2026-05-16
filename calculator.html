@@ -394,16 +394,10 @@ function evaluate() {
 
     // Expand constants to full precision BEFORE evaluation
     expr = expr.replace(/πg|pi_g/gi, `(${PI_G})`);
-    expr = expr.replace(/(?<![a-zA-Z])π(?!_)/g, `(${mode === 'golden' ? PI_G : PI_S})`);
+    expr = expr.replace(/π/g, `(${mode === 'golden' ? PI_G : PI_S})`);
     expr = expr.replace(/φ|phi/gi, `(${PHI})`);
     expr = expr.replace(/\be\b/g, `(${EULER})`);
 
-    // Handle implicit multiplication: digit( or )(
-    // e.g., 2π → 2(3.14) → 2*(3.14); (π)(2) → (3.14)(2) → (3.14)*(2)
-    expr = expr.replace(/(\d)\(/g, '$1*(');
-    expr = expr.replace(/\)\(/g, ')*(');
-
-    // ^ → **
     // Handle implicit multiplication: digit( or )(
     // e.g., 2π → 2(3.14) → 2*(3.14); (π)(2) → (3.14)(2) → (3.14)*(2)
     expr = expr.replace(/(\d)\(/g, '$1*(');
