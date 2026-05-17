@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pi.thealpha-secret.xyz/sitemap.xml
+Sitemap: https://pi.thealpha-secret.xyz/blog/sitemap.xml
