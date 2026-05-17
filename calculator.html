@@ -7,6 +7,17 @@
   <meta name="description" content="Interactive calculator using golden π = 4/√φ = 3.144605511030. Full expression evaluator with trig, comparison mode." />
   <meta property="og:title" content="Golden π Calculator" />
   <meta property="og:description" content="Interactive calculator using golden π = 4/√φ = 3.144605511030. Full expression evaluator with trig, comparison mode." />
+  <meta property="og:url" content="https://pi.thealpha-secret.xyz/calculator.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://pi.thealpha-secret.xyz/img/PiCover.jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pi.thealpha-secret.xyz/calculator.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Golden π Calculator — The True Value Of Pi" />
+  <meta name="twitter:description" content="Interactive calculator using golden π = 4/√φ = 3.144605511030. Full expression evaluator with trig, comparison mode." />
+  <meta name="twitter:image" content="https://pi.thealpha-secret.xyz/img/PiCover.jpeg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="css/styles.css">
   <style>
@@ -261,7 +272,7 @@
   <button onclick="insert('8')">8</button>
   <button onclick="insert('9')">9</button>
   <button class="op" onclick="insert('-')">−</button>
-  <button class="eq" onclick="evaluate()">=</button>
+  <button class="eq" onclick="calc()">=</button>
 
   <button onclick="insert('4')">4</button>
   <button onclick="insert('5')">5</button>
@@ -386,7 +397,7 @@ function clearAll() {
 }
 
 // ── Expression evaluator ──
-function evaluate() {
+function calc() {
   if (!display || display === '0') return;
 
   try {
@@ -394,10 +405,16 @@ function evaluate() {
 
     // Expand constants to full precision BEFORE evaluation
     expr = expr.replace(/πg|pi_g/gi, `(${PI_G})`);
-    expr = expr.replace(/π/g, `(${mode === 'golden' ? PI_G : PI_S})`);
+    expr = expr.replace(/(?<![a-zA-Z])π(?!_)/g, `(${mode === 'golden' ? PI_G : PI_S})`);
     expr = expr.replace(/φ|phi/gi, `(${PHI})`);
     expr = expr.replace(/\be\b/g, `(${EULER})`);
 
+    // Handle implicit multiplication: digit( or )(
+    // e.g., 2π → 2(3.14) → 2*(3.14); (π)(2) → (3.14)(2) → (3.14)*(2)
+    expr = expr.replace(/(\d)\(/g, '$1*(');
+    expr = expr.replace(/\)\(/g, ')*(');
+
+    // ^ → **
     // Handle implicit multiplication: digit( or )(
     // e.g., 2π → 2(3.14) → 2*(3.14); (π)(2) → (3.14)(2) → (3.14)*(2)
     expr = expr.replace(/(\d)\(/g, '$1*(');
@@ -496,7 +513,7 @@ function renderTrigTable() {
 document.addEventListener('keydown', (e) => {
   const key = e.key;
   if (/^[\d.+\-*/^%()]$/.test(key)) { insert(key); e.preventDefault(); }
-  else if (key === 'Enter') { evaluate(); e.preventDefault(); }
+  else if (key === 'Enter') { calc(); e.preventDefault(); }
   else if (key === 'Backspace') { backspace(); e.preventDefault(); }
   else if (key === 'Escape') { clearAll(); e.preventDefault(); }
   else if (key === 'p') { insert('πg'); e.preventDefault(); }
