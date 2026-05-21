@@ -547,6 +547,7 @@
 // ─── Constants ──────────────────────────────────────────────
 const PHI = (1 + Math.sqrt(5)) / 2;
 const PI_G = 4 / Math.sqrt(PHI);
+const PI_G_32 = '3.14460551102969314427823434337184'; // 32 decimal places
 const PI_C = Math.PI;
 const SQRT_PHI = Math.sqrt(PHI);
 
@@ -595,7 +596,11 @@ function update() {
   ratioTargetLabel.textContent = `target: √φ = ${SQRT_PHI.toFixed(5)}`;
 
   // Computed π
-  computedPi.textContent = pi.toFixed(8);
+  if (exactMode) {
+    computedPi.textContent = PI_G_32;
+  } else {
+    computedPi.textContent = pi.toFixed(15);
+  }
   computedPi.className = 'value ' + (isExact ? 'green' : 'gold');
 
   // Delta from golden π
@@ -628,11 +633,11 @@ function update() {
 
   // Equation display
   if (exactMode) {
-    eqDisplay.textContent = '4/√φ = ' + PI_G.toFixed(8) + '  (exact identity)';
+    eqDisplay.textContent = '4/√φ = ' + PI_G_32 + '  (exact identity)';
   } else if (isExact) {
-    eqDisplay.textContent = '4/√φ = ' + PI_G.toFixed(8);
+    eqDisplay.textContent = '4/√φ = ' + PI_G.toFixed(15);
   } else {
-    eqDisplay.textContent = pi.toFixed(8) + '  (r = ' + r.toFixed(5) + ')';
+    eqDisplay.textContent = pi.toFixed(15) + '  (r = ' + r.toFixed(6) + ')';
   }
 
   // Ratio marker position (map 1.0→1.5 to 0%→100%)
@@ -738,7 +743,7 @@ function drawGeometry(r, pi, isExact) {
   // Result display
   ctx.fillStyle = '#e8d48b';
   ctx.font = '16px Courier New';
-  ctx.fillText('π = ' + pi.toFixed(8), 460, 200);
+  ctx.fillText('π = ' + pi.toFixed(15), 460, 200);
 
   ctx.font = '14px Courier New';
   ctx.fillStyle = isExact ? '#4caf7d' : '#a68a3a';
@@ -747,7 +752,7 @@ function drawGeometry(r, pi, isExact) {
   if (isExact) {
     ctx.fillStyle = '#4caf7d';
     ctx.font = 'bold 14px Georgia';
-    ctx.fillText('≈ 4/√φ = ' + PI_G.toFixed(8), 460, 250);
+    ctx.fillText('≈ 4/√φ = ' + PI_G_32, 460, 250);
   }
 
   // Formula
