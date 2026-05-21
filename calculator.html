@@ -395,6 +395,8 @@ function updateDisplay() {
 }
 
 function insert(val) {
+  // Reset on error state — fresh start
+  if (display === 'Error') { display = '0'; }
   if (display === '0' && !'+-*/^%'.includes(val) && val !== ')') {
     display = (val === '.' ? '0.' : val);
   } else {
@@ -416,7 +418,7 @@ function clearAll() {
 
 // ── Expression evaluator ──
 function calc() {
-  if (!display || display === '0') return;
+  if (!display || display === '0' || display === 'Error') return;
 
   try {
     let expr = display;
@@ -433,6 +435,10 @@ function calc() {
     // e.g., 2π → 2(3.14) → 2*(3.14); (π)(2) → (3.14)(2) → (3.14)*(2)
     expr = expr.replace(/(\d)\(/g, '$1*(');
     expr = expr.replace(/\)\(/g, ')*(');
+
+    // % → percentage (/100)
+    // Handle trailing number% like 200+10% or standalone 10%
+    expr = expr.replace(/(\d+)%/g, '($1/100)');
 
     // ^ → **
     expr = expr.replace(/\^/g, '**');
