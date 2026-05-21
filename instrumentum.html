@@ -568,7 +568,13 @@ const canvas = document.getElementById('geoCanvas');
 const ctx = canvas.getContext('2d');
 
 // ─── Core function ──────────────────────────────────────────
+let exactMode = false;
+
 function computePi(r) {
+  if (exactMode) {
+    // Use the exact algebraic identity: π = 4/√φ
+    return PI_G;
+  }
   const r2 = r * r;
   return 4 * r2 / ((r2 + 1) * Math.sqrt(r2 - 1));
 }
@@ -606,7 +612,10 @@ function update() {
   deltaConvLabel.className = 'delta approx';
 
   // Status badge
-  if (isExact) {
+  if (exactMode) {
+    statusBadge.className = 'status-badge exact';
+    statusBadge.textContent = '✅ EXACT — π = 4/√φ (algebraic identity)';
+  } else if (isExact) {
     statusBadge.className = 'status-badge exact';
     statusBadge.textContent = '✅ EXACT — Golden π achieved';
   } else if (absDG < 0.001) {
@@ -618,7 +627,9 @@ function update() {
   }
 
   // Equation display
-  if (isExact) {
+  if (exactMode) {
+    eqDisplay.textContent = '4/√φ = ' + PI_G.toFixed(8) + '  (exact identity)';
+  } else if (isExact) {
     eqDisplay.textContent = '4/√φ = ' + PI_G.toFixed(8);
   } else {
     eqDisplay.textContent = pi.toFixed(8) + '  (r = ' + r.toFixed(5) + ')';
@@ -748,12 +759,24 @@ function drawGeometry(r, pi, isExact) {
 // ─── Init ───────────────────────────────────────────────────
 // Snap to exact √φ
 function snapToPhi() {
+  exactMode = true;
   slider.value = SQRT_PHI;
+  snapButton.textContent = '✅ √φ (exact identity)';
+  snapButton.style.background = 'rgba(76,175,125,0.3)';
   update();
 }
 
 document.getElementById('snapButton').addEventListener('click', snapToPhi);
-slider.addEventListener('input', update);
+slider.addEventListener('input', function() {
+  // When user drags slider away from √φ, exit exact mode
+  const r = parseFloat(slider.value);
+  if (Math.abs(r - SQRT_PHI) > 0.000005) {
+    exactMode = false;
+    snapButton.textContent = '🎯 Snap to √φ (exact)';
+    snapButton.style.background = 'rgba(76,175,125,0.2)';
+  }
+  update();
+});
 
 // Start at exact √φ
 snapToPhi();
