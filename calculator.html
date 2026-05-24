@@ -383,7 +383,7 @@ function setMode(m) {
     }
   });
   document.getElementById('ratioDisplay').textContent =
-    (((PI_G / PI_S - 1) * 100).toFixed(4));
+    '+'+((PI_G / PI_S - 1) * 100).toFixed(4);
   renderTrigTable();
 }
 
@@ -438,7 +438,8 @@ function calc() {
 
     // % → percentage (/100)
     // Handle trailing number% like 200+10% or standalone 10%
-    expr = expr.replace(/(\d+)%/g, '($1/100)');
+    // Also handles decimals: 0.05% → (0.05/100)
+    expr = expr.replace(/(\d+\.?\d*)%/g, '($1/100)');
 
     // ^ → **
     expr = expr.replace(/\^/g, '**');
